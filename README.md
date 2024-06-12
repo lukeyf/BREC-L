@@ -1,8 +1,8 @@
-# Towards Better Evaluation of GNN Expressiveness with BREC Dataset
+# An Empirical Study of Realized GNN Expressiveness
 
 ## About
 
-This repository is the official implementation of the following paper: [Towards Better Evaluation of GNN Expressiveness with BREC Dataset](https://arxiv.org/abs/2304.07702).
+This repository is the official implementation of the following paper: [An Empirical Study of Realized GNN Expressiveness](https://arxiv.org/abs/2304.07702).
 
 We also provide a Pypi package for simple usage. Please refer to [Pypi package](https://pypi.org/project/brec/).
 
