@@ -17,7 +17,7 @@ from tqdm import tqdm
 import os
 import networkx as nx
 import argparse
-
+from torch_geometric.utils import to_networkx, from_networkx
 from torch.nn import CosineEmbeddingLoss
 import sys
 
@@ -118,13 +118,14 @@ def pre_calculation(*args, **kwargs):
     logger.info(f"pre-calculation time cost: {time_cost}")
 
 
+
 # Stage 2: dataset construction
 # Here is for dataset construction, including data processing
 def get_dataset():
     time_start = time.process_time()
 
     # Do something
-    dataset = BRECDataset()
+    dataset = BRECDataset(line_graph=True)
 
     time_end = time.process_time()
     time_cost = round(time_end - time_start, 2)
@@ -276,7 +277,7 @@ def evaluation(dataset, model, path, device, config):
     # Include the is_line_graph variable in the log
     logger.info(
         f"{cnt-fail_in_reliability}\t{cnt}\t{fail_in_reliability}\t{str(config.architecture['block_features'])}\t{str(config.architecture['depth_of_mlp'])}\t{str(config.architecture['new_suffix'])}"
-        f"\t{OUTPUT_DIM}\t{BATCH_SIZE}\t{LEARNING_RATE}\t{WEIGHT_DECAY}\t{THRESHOLD}\t{MARGIN}\t{LOSS_THRESHOLD}\t{EPOCH}\t{SEED}\t{False}"
+        f"\t{OUTPUT_DIM}\t{BATCH_SIZE}\t{LEARNING_RATE}\t{WEIGHT_DECAY}\t{THRESHOLD}\t{MARGIN}\t{LOSS_THRESHOLD}\t{EPOCH}\t{SEED}\t{True}"
     )
 
 
@@ -291,9 +292,9 @@ def main():
         exit(0)
 
     # os.environ['CUDA_LAUNCH_BLOCKING'] = "1"  # TODO uncomment only for CUDA error debugging
-    os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
+    # os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+    print(device)
     # torch.backends.cudnn.deterministic = True  # can impact performance
     # torch.backends.cudnn.benchmark = False  # can impact performance
 

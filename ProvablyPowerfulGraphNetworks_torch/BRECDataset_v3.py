@@ -22,11 +22,14 @@ class BRECDataset(InMemoryDataset):
         transform=None,
         pre_transform=None,
         pre_filter=None,
+        line_graph=False,
     ):
         self.root = root
         self.name = name
+        self.line_graph = line_graph
         super().__init__(root, transform, pre_transform, pre_filter)
         self.data = torch.load(self.processed_paths[0])
+        
 
     @property
     def processed_dir(self):
@@ -45,8 +48,10 @@ class BRECDataset(InMemoryDataset):
 
         data_list = np.load(self.raw_paths[0], allow_pickle=True)
         data = []
-        for g in data_list:
+        for g in tqdm(data_list):
             g_networkx = nx.from_graph6_bytes(g)
+            if self.line_graph:
+                g_networkx = nx.line_graph(g_networkx)
             edge = np.expand_dims(nx.to_numpy_array(g_networkx), axis=0)
             node = np.expand_dims(np.eye(g_networkx.number_of_nodes()), axis=0)
             data.append(torch.tensor(edge + node, dtype=torch.float32))

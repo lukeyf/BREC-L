@@ -86,6 +86,7 @@ parser.add_argument("--SEED", type=int, default=2022)
 parser.add_argument("--THRESHOLD", type=float, default=THRESHOLD)
 parser.add_argument("--MARGIN", type=float, default=MARGIN)
 parser.add_argument("--LOSS_THRESHOLD", type=float, default=LOSS_THRESHOLD)
+parser.add_argument("--LINE_GRAPH", action="store_true", help="If set, use line graph")
 
 
 args = parser.parse_args()
@@ -296,7 +297,7 @@ def get_dataset(name, pre_transform, device):
         if "x" not in data:
             data.x = torch.ones([data.num_nodes, 1], dtype=torch.long)
         return data
-    dataset = BRECDataset(name=name, pre_transform=pre_transform, transform=node_feature_transform)
+    dataset = BRECDataset(name=name, pre_transform=pre_transform, transform=node_feature_transform, line_graph=args.LINE_GRAPH)
 
     time_end = time.process_time()
     time_cost = round(time_end - time_start, 2)
@@ -455,10 +456,10 @@ def evaluation(dataset, model, path, device, args):
 
     logger.add(f"{path}/result_show.txt", format="{message}", encoding="utf-8")
     logger.info(
-        "Real_correct\tCorrect\tFail\th\tlayers\twidth\tOUTPUT_DIM\tBATCH_SIZE\tLEARNING_RATE\tWEIGHT_DECAY\tSEED"
+        "Real_correct\tCorrect\tFail\th\tlayers\twidth\tOUTPUT_DIM\tBATCH_SIZE\tLEARNING_RATE\tWEIGHT_DECAY\tSEED\tLINE"
     )
     logger.info(
-        f"{cnt-fail_in_reliability}\t{cnt}\t{fail_in_reliability}\t{args.h}\t{args.layers}\t{args.width}\t{OUTPUT_DIM}\t{BATCH_SIZE}\t{LEARNING_RATE}\t{WEIGHT_DECAY}\t{SEED}"
+        f"{cnt-fail_in_reliability}\t{cnt}\t{fail_in_reliability}\t{args.h}\t{args.layers}\t{args.width}\t{OUTPUT_DIM}\t{BATCH_SIZE}\t{LEARNING_RATE}\t{WEIGHT_DECAY}\t{SEED}\t{args.LINE_GRAPH}"
     )
 
 

@@ -12,8 +12,11 @@ import copy
 torch_geometric.seed_everything(2022)
 
 
-def graph6_to_pyg(x):
-    return from_networkx(nx.from_graph6_bytes(x))
+def graph6_to_pyg(x, line_graph=False):
+    if line_graph:
+        return from_networkx(nx.line_graph(nx.from_graph6_bytes(x)))
+    else:
+        return from_networkx(nx.from_graph6_bytes(x))
 
 
 class BRECDataset(InMemoryDataset):
@@ -24,11 +27,13 @@ class BRECDataset(InMemoryDataset):
         transform=None,
         pre_transform=None,
         pre_filter=None,
+        line_graph=False,
     ):
         self.root = root
         self.name = name
         super().__init__(root, transform, pre_transform, pre_filter)
         self.data, self.slices = torch.load(self.processed_paths[0])
+        self.line_graph = line_graph
 
     @property
     def processed_dir(self):
@@ -64,7 +69,7 @@ class BRECDataset(InMemoryDataset):
     def process(self):
 
         data_list = np.load(self.raw_paths[0], allow_pickle=True)
-        data_list = [graph6_to_pyg(data) for data in data_list]
+        data_list = [graph6_to_pyg(data, line_graph=self.line_graph) for data in data_list]
 
         if self.pre_filter is not None:
             data_list = [data for data in data_list if self.pre_filter(data)]

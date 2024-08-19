@@ -13,7 +13,7 @@ import glob
 import re
 import types
 
-def get_custom_edge_list(ks, substructure_type=None, filename=None):
+def get_custom_edge_list(ks, substructure_type=None, filename=None, line_graph=False):
     '''
         Instantiates a list of `edge_list`s representing substructures
         of type `substructure_type` with sizes specified by `ks`.
@@ -26,6 +26,8 @@ def get_custom_edge_list(ks, substructure_type=None, filename=None):
             graphs_nx = getattr(nx, substructure_type)(k)
         else:
             graphs_nx = nx.read_graph6(os.path.join(filename, 'graph{}c.g6'.format(k)))
+        if line_graph:
+            graphs_nx = nx.line_graph(graphs_nx)
         if isinstance(graphs_nx, list) or isinstance(graphs_nx, types.GeneratorType):
             edge_lists += [list(graph_nx.edges) for graph_nx in graphs_nx]
         else:
@@ -59,7 +61,7 @@ def process_arguments(args):
         args['k'] = args['k'][0]
         k_max = args['k']
         k_min = 2 if args['id_type'] == 'star_graph' else 3
-        args['custom_edge_list'] = get_custom_edge_list(list(range(k_min, k_max + 1)), args['id_type'])         
+        args['custom_edge_list'] = get_custom_edge_list(list(range(k_min, k_max + 1)), args['id_type'], args['LINE_GRAPH'])         
 
     elif args['id_type'] in ['cycle_graph_chosen_k',
                              'path_graph_chosen_k', 
@@ -67,18 +69,18 @@ def process_arguments(args):
                              'binomial_tree_chosen_k',
                              'star_graph_chosen_k',
                              'nonisomorphic_trees_chosen_k']:
-        args['custom_edge_list'] = get_custom_edge_list(args['k'], args['id_type'].replace('_chosen_k',''))
+        args['custom_edge_list'] = get_custom_edge_list(args['k'], args['id_type'].replace('_chosen_k',''), args['LINE_GRAPH'])
         
     elif args['id_type'] in ['all_simple_graphs']:
         args['k'] = args['k'][0]
         k_max = args['k']
         k_min = 3
         filename = os.path.join(args['root_folder'], 'all_simple_graphs')
-        args['custom_edge_list'] = get_custom_edge_list(list(range(k_min, k_max + 1)), filename=filename)
+        args['custom_edge_list'] = get_custom_edge_list(list(range(k_min, k_max + 1)), filename=filename, line_graph=args['LINE_GRAPH'])
         
     elif args['id_type'] in ['all_simple_graphs_chosen_k']:
         filename = os.path.join(args['root_folder'], 'all_simple_graphs')
-        args['custom_edge_list'] = get_custom_edge_list(args['k'], filename=filename)
+        args['custom_edge_list'] = get_custom_edge_list(args['k'], filename=filename, line_graph=args['LINE_GRAPH'])
         
     elif args['id_type'] in ['diamond_graph']:
         args['k'] = None

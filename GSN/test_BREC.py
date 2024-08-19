@@ -244,10 +244,10 @@ def evaluation(
 
     logger.add(f"{path}/result_show.txt", format="{message}", encoding="utf-8")
     logger.info(
-        "Real_correct\tCorrect\tFail\tOUTPUT_DIM\tBATCH_SIZE\tLEARNING_RATE\tWEIGHT_DECAY\tSEED"
+        "Real_correct\tCorrect\tFail\tOUTPUT_DIM\tBATCH_SIZE\tLEARNING_RATE\tWEIGHT_DECAY\tSEED\tLINE_GRAPH"
     )
     logger.info(
-        f"{cnt-fail_in_reliability}\t{cnt}\t{fail_in_reliability}\t{OUTPUT_DIM}\t{BATCH_SIZE}\t{LEARNING_RATE}\t{WEIGHT_DECAY}\t{SEED}"
+        f"{cnt-fail_in_reliability}\t{cnt}\t{fail_in_reliability}\t{OUTPUT_DIM}\t{BATCH_SIZE}\t{LEARNING_RATE}\t{WEIGHT_DECAY}\t{SEED}\t{args['LINE_GRAPH']}"
     )
 
 
@@ -627,6 +627,8 @@ if __name__ == "__main__":
     parser.add_argument("--THRESHOLD", type=float, default=THRESHOLD)
     parser.add_argument("--MARGIN", type=float, default=MARGIN)
     parser.add_argument("--LOSS_THRESHOLD", type=float, default=LOSS_THRESHOLD)
+
+    parser.add_argument("--LINE_GRAPH", action="store_true", help="If set, use line graph")
     args = parser.parse_args()
     P_NORM = 2 if args.P_NORM == "2" else torch.inf
     EPOCH = args.EPOCH
