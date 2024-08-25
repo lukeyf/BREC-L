@@ -47,7 +47,7 @@ EPOCH = 20
 MARGIN = 0.0
 LEARNING_RATE = 1e-4
 THRESHOLD = 72.34
-BATCH_SIZE = 32
+BATCH_SIZE = 8
 WEIGHT_DECAY = 1e-4
 LOSS_THRESHOLD = 0.2
 
@@ -217,6 +217,7 @@ def evaluation(dataset, model, path, device, config):
                     loss.backward()
                     optimizer.step()
                     loss_all += len(pred) / 2 * loss.item()
+                    torch.cuda.empty_cache()
                 loss_all /= NUM_RELABEL
                 logger.info(f"Loss: {loss_all}")
                 if loss_all < LOSS_THRESHOLD:
