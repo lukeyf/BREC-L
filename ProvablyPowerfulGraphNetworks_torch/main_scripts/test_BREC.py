@@ -292,9 +292,9 @@ def main():
         exit(0)
 
     # os.environ['CUDA_LAUNCH_BLOCKING'] = "1"  # TODO uncomment only for CUDA error debugging
-    os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
+    # os.environ["CUDA_VISIBLE_DEVICES"] = config.gpu
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+    print(device)
     # torch.backends.cudnn.deterministic = True  # can impact performance
     # torch.backends.cudnn.benchmark = False  # can impact performance
 

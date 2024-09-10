@@ -43,7 +43,7 @@ OUTPUT_DIM = 16
 EPSILON_MATRIX = 1e-7
 EPSILON_CMP = 1e-6
 SAMPLE_NUM = 400
-EPOCH = 20
+EPOCH = 50
 MARGIN = 0.0
 LEARNING_RATE = 1e-4
 THRESHOLD = 72.34
@@ -125,7 +125,7 @@ def get_dataset():
     time_start = time.process_time()
 
     # Do something
-    dataset = BRECDataset(line_graph=True)
+    dataset = BRECDataset(line_graph_deg = 1)
 
     time_end = time.process_time()
     time_cost = round(time_end - time_start, 2)

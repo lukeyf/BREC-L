@@ -16,3 +16,5 @@ result_show.txt
 *.ipynb
 logging.log
 !DropGNN/num_node.npy
+*.log
+*.job

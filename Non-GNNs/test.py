@@ -12,6 +12,7 @@ import random
 import logging
 import time
 import os
+import networkx as nx
 
 
 np.random.seed(2022)
@@ -31,6 +32,8 @@ def func_None():
 
 
 def wl_method(method, G, k, mode=None):
+    for d in range(args.line_graph_degree):
+        G = nx.line_graph(G)
     return func_dict.get(method, func_None)(G, k, mode)
 
 
@@ -51,9 +54,12 @@ parser.add_argument("--wl", type=int, default="1")
 parser.add_argument("--mode", type=str, default="none")
 parser.add_argument("--method", type=str, default="wl")
 parser.add_argument("--graph_type", type=str, default="none")
+parser.add_argument("--id", type=int, default=-1)
+parser.add_argument("--line_graph_degree", type=int, default=0)
 args = parser.parse_args()
 
 G_TYPE = args.graph_type.strip()
+ID = int(args.id)
 if G_TYPE == "none":
     method_name = f"{args.wl}{args.method}_{args.mode}"
 else:
@@ -61,7 +67,8 @@ else:
         method_name = f"{args.wl}{args.method}_{args.mode}_{G_TYPE}"
     else:
         raise NotImplementedError(f"{G_TYPE} do not exist!")
-
+if not ID == -1:
+    method_name += f"_{ID}"
 
 path = os.path.join("result", method_name)
 os.makedirs(path, exist_ok=True)
@@ -88,10 +95,13 @@ def count_distinguish_num(graph_tuple_list):
     DATA_NUM = (
         400 if G_TYPE == "none" else int(part_dict[G_TYPE][1] - part_dict[G_TYPE][0])
     )
+    if not ID == -1:
+        DATA_NUM = 1
 
     for part_name, part_range in part_dict.items():
         if not (G_TYPE == "none" or G_TYPE == part_name):
             continue
+
 
         logging.info(f"{part_name} part starting ---")
 
@@ -100,6 +110,9 @@ def count_distinguish_num(graph_tuple_list):
         start = time.process_time()
 
         for id in tqdm(range(part_range[0], part_range[1])):
+            if not ID == -1 and not id == ID:
+                continue
+
             graph_tuple = graph_tuple_list[id]
             if not wl_method(
                 args.method, graph_tuple[0], args.wl, args.mode
@@ -108,6 +121,7 @@ def count_distinguish_num(graph_tuple_list):
                 cnt_part += 1
                 correct_list.append(id)
                 correct_list_part.append(id)
+                logging.info(f"Right in {id}")
                 # if part_name == 'Reliability':
                 #     print(id)
             else:
