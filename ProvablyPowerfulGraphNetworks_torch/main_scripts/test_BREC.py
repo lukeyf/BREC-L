@@ -97,13 +97,13 @@ torch.backends.cudnn.deterministic = True
 
 # part_dict: {graph generation type, range}
 part_dict = {
-    "Basic": (0, 60),
+    # "Basic": (0, 60),
     "Regular": (60, 110),
     'Strongly_Regular': (110, 160),
-    "Extension": (160, 260),
+    # "Extension": (160, 260),
     "CFI": (260, 360),
     "4-Vertex_Condition": (360, 380),
-    "Distance_Regular": (380, 400),
+    # "Distance_Regular": (380, 400),
 }
 
 result_dict = {
