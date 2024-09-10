@@ -1,15 +1,21 @@
-# An Empirical Study of Realized GNN Expressiveness
+# Theoretical Insights into Line Graph Transformation on Graph Learning
 
 ## About
 
-This repository is the official implementation of the following paper: [An Empirical Study of Realized GNN Expressiveness](https://arxiv.org/abs/2304.07702).
+This repository is the implementation of the following paper: [Theoretical Insights into Line Graph Transformation on Graph Learning]().
 
-We also provide a Pypi package for simple usage. Please refer to [Pypi package](https://pypi.org/project/brec/).
 
-**BREC**  is a new dataset for GNN expressiveness comparison.
-It addresses the limitations of previous datasets, including difficulty, granularity, and scale, by incorporating
-400 pairs of various graphs in four categories (Basic, Regular, Extension, CFI).
-The graphs are organized pair-wise, where each pair is tested individually to return whether a GNN can distinguish them. We propose a new evaluation method, **RPC** (Reliable Paired Comparisons), with a contrastive training framework.
+This project is built on the [**BREC** dataset](https://github.com/GraphPKU/BREC) which includes 400 pairs of graphs categorized into basic, regular, extension, and CFI graphs. The following dictionary shows the indices of these graphs in the 400 pairs.
+
+```python
+  "Basic": (0, 60),
+  "Regular": (60, 110),
+  "Strongly Regular": (110, 160),
+  "Extension": (160, 260),
+  "CFI": (260, 360),
+  "4-Vertex_Condition": (360, 380),
+  "Distance_Regular": (380, 400),
+```
 
 
 ## Usages
@@ -36,124 +42,79 @@ To test on BREC, there are four steps to follow:
 
 ### Requirements
 
-Tested combination: Python 3.8.13 + [PyTorch 1.13.1](https://pytorch.org/get-started/previous-versions/) + [PyTorch_Geometric 2.2](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html)
+The experiments were run on: Python 3.8.13 + [PyTorch 1.13.1](https://pytorch.org/get-started/previous-versions/) + [PyTorch_Geometric 2.2](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html)
 
-Other required Python libraries included: numpy, networkx, loguru, etc.
+You can use the following command for environment building.
+```
+pip install -r requirements.txt
+```
 
-For reproducing other results, please refer to the corresponding requirements for additional libraries.
 
 ### <span id="preparation">Data Preparation</span>
 
 Data preparation requires two steps: generate the dataset and arrange it in the correct position.
 
-#### Step 1: Data Generation
 
-We provide zipped data file *BREC_data_all.zip*. You can unzip it for 3 data files in npy format. You can also customize dataset refering to [Customize Dataset](#customize).
+First, unzip the dataset by
 
-For most methods, only *brec_v3.npy* is needed. More detailed requirements on datasets can refer to corresponding implementations.
+```
+unzip BREC_data_all.zip
+```
 
-#### Step 2: Data Arrangement
+Only the PPGN involves the usage of `brec_v3.npy`. Move this file to `ProvablyPowerfulGraphNetworks_torch/Data/raw/`.
 
-Replace *$.txt* with *$.npy* in the corresponding *Data/raw* directory.
-For most methods, only *brec_v3.txt* is in *Data/raw* directory. Thus replacing *brec_v3.txt* with *brec_v3.npy* is enough.
 
-### <span id="directory">Reproduce Baselines</span>
+### <span id="reproduce">Reproducing PPGN</span>
 
-For baseline results reproduction, please refer to the respective directories:
+First, move to the directory using 
 
-| Baseline          | Directory                           |
-| ----------------- | ----------------------------------- |
-| NGNN              | NestedGNN                           |
-| DS-GNN            | SUN                                 |
-| DSS-GNN           | SUN                                 |
-| SUN               | SUN                                 |
-| PPGN              | ProvablyPowerfulGraphNetworks_torch |
-| GNN-AK            | GNNAsKernel                         |
-| DE+NGNN           | NestedGNN                           |
-| KP-GNN            | KP-GNN                              |
-| KC-SetGNN         | KCSetGNN                            |
-| I$^2$-GNN         | I2GNN                               |
-| GSN               | GSN                                 |
-| Graphormer        | Graphormer                          |
-| OSAN              | OSAN                                |
-| $\delta$-LGNN(SparseWL) | SparseWL                      |
-| SWL               | SWL                                 |
-| DropGNN           | DropGNN                             |
-| Non-GNN Baselines | Non-GNN                             |
-| Your Own GNN      | Base                                |
+```
+cd ProvablyPowerfulGraphNetworks_torch/main_scripts
+```
 
-### Test Your Own GNN
+For the non-line graph experiment, you can use 
+```
+python test_BREC_search.py
+```
 
-In addition to previous steps in reproducing baselines, implementing *test_BREC.py* is needed.
+For the line graph experiment, you can use
 
-#### Evaluation Step
+```
+python test_BREC_search_line.py
+```
 
-To test your GNNs, in addition to previous steps, you need to implement *test_BREC.py* with your model and run (${configs} represents corresponding config usage):
+### <span id="reproduce">Reproducing WL Tests</span>
+
+First, move to the directory using 
+```
+cd Non-GNNs
+```
+
+To reproduce result on 3-WL, run:
 
 ```bash
-python test_BREC.py ${configs}
+python test.py --wl 2 --method fwl
 ```
 
-*test.py* is the pipeline for evaluation, including four stages:
+or
 
 ```bash
-1. pre-calculation;
-
-2. dataset construction;
-
-3. model construction;
-
-4. evaluation
+python test.py --wl 3 --method k-wl
 ```
 
-**Pre-calculation** aims to organize offline operations on graphs.
-
-**Dataset construction** aims to process the dataset with specific operations. BRECDataset is implemented based on InMemoryDataset. It is recommended to use transform and pre_transform to transform the graphs.
-
-**Model construction** aims to construct the GNN.
-
-**Evaluation** implements RPC. With the model and dataset, it will produce the final results.
-
-Suppose your own experiment is done by running *python main.py*. You can easily implement *test_BREC.py* with *main.py*. You can drop the training and testing pipeline in *main.py* and split the rest into corresponding stages in *test.py*.
-
-### <span id="customize">Customize BREC Dataset</span>
-
-Some graphs in BREC may be too difficult for some models, like strongly regular graphs that 3-WL can not distinguish.
-You can discard some graphs from BREC to reduce test time.
-In addition, the parameter $q$ in RPC can also be adjusted when customizing. Only the *customize* directory is required.
+For 4-WL, you can use 
 
 ```bash
-├── Data     # Original graph file
-    └── raw
-        ├── basic.npy  # Basic graphs
-        ├── regular.npy  # Simple regular graphs
-        ├── str.npy   # Strongly regular graphs
-        ├── cfi.npy   # CFI graphs
-        ├── extension.npy # Extension graphs
-        ├── 4vtx.npy  # 4-vertex condition graphs
-        └── dr.npy   # Distance regular graphs
-├── dataset_v3.py    # Generating brec_v3.npy 
-├── dataset_v3_3wl.py # Generating brec_v3_3wl.npy    
-└── dataset_v3_no4v_60cfi.py  # Generating brec_v3_no4v_60cfi.npy
+python test.py --wl 3 --method fwl
+```
+or
+
+```bash
+python test.py --wl 4 --method k-wl
 ```
 
-Using *brec_v3.npy* by running *python dataset_v3.py* is enough for most methods.
+For line graph experiment for example with the 3-WL test, use 
 
-For customization, suppose you want to discard distance regular graphs from BREC. You need to delete *dr.npy* related codes in *dataset_v3.py*. The total pair number and the "category-id_range" dictionary should also be adjusted.
-
-"NUM" represent $q$ in RPC, which can be adjusted for a different RPC check.
-
-### Results Demonstration
-
-The 400 pairs of graphs are from four categories: Basic, Regular, Extension, CFI. We further split 4-vertex condition and distance regular graphs from Regular as a separate category. The "category-id_range" dictionary is as follows:
-
-```python
-  "Basic": (0, 60),
-  "Regular": (60, 160),
-  "Extension": (160, 260),
-  "CFI": (260, 360),
-  "4-Vertex_Condition": (360, 380),
-  "Distance_Regular": (380, 400),
+```bash
+python test.py --wl 2 --method fwl --line-graph-degree 1
 ```
-
-You can refer to the detailed graph in *customize/Data/raw* for analysis.

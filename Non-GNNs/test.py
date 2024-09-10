@@ -38,13 +38,14 @@ def wl_method(method, G, k, mode=None):
 
 
 part_dict = {
-    "Basic": (0, 60),
-    "Regular": (60, 160),
-    "Extension": (160, 260),
+    # "Basic": (0, 60),
+    "Regular": (60, 110),
+    "Strongly Regular": (60, 110),
+    # "Extension": (160, 260),
     "CFI": (260, 360),
     "4-Vertex_Condition": (360, 380),
-    "Distance_Regular": (380, 400),
-    "Reliability": (400, 800),
+    # "Distance_Regular": (380, 400),
+    # "Reliability": (400, 800),
 }
 
 

@@ -98,11 +98,22 @@ torch.backends.cudnn.deterministic = True
 # part_dict: {graph generation type, range}
 part_dict = {
     "Basic": (0, 60),
-    "Regular": (60, 160),
+    "Regular": (60, 110),
+    'Strongly_Regular': (110, 160),
     "Extension": (160, 260),
     "CFI": (260, 360),
     "4-Vertex_Condition": (360, 380),
     "Distance_Regular": (380, 400),
+}
+
+result_dict = {
+    "Basic": 0,
+    "Regular": 0,
+    'Strongly_Regular': 0,
+    "Extension": 0,
+    "CFI": 0,
+    "4-Vertex_Condition": 0,
+    "Distance_Regular": 0,
 }
 
 
@@ -251,7 +262,7 @@ def evaluation(dataset, model, path, device, config):
 
         end = time.process_time()
         time_cost_part = round(end - start, 2)
-
+        result_dict[part_name] = cnt_part
         logger.info(
             f"{part_name} part costs time {time_cost_part}; Correct in {cnt_part} / {part_range[1] - part_range[0]}"
         )
@@ -270,13 +281,18 @@ def evaluation(dataset, model, path, device, config):
     logger.info(correct_list)
 
     logger.add(f"{path}/result_show.txt", format="{message}", encoding="utf-8")
+    info_str = ''
+    value_str = ''
+    for k, v in result_dict.items():
+        info_str += k + "\t"
+        value_str += str(v) + "\t"
     logger.info(
-        "Real_correct\tCorrect\tFail\tarchitecture\tdepth\tsuffix\tOUTPUT_DIM\tBATCH_SIZE\tLEARNING_RATE\tWEIGHT_DECAY\tTHRESHOLD\tMARGIN\tLOSS_THRESHOLD\tEPOCH\tSEED\IS_LINE"
+        info_str+"Real_correct\tCorrect\tFail\tarchitecture\tdepth\tsuffix\tOUTPUT_DIM\tBATCH_SIZE\tLEARNING_RATE\tWEIGHT_DECAY\tTHRESHOLD\tMARGIN\tLOSS_THRESHOLD\tEPOCH\tSEED\IS_LINE"
     )
 
     # Include the is_line_graph variable in the log
     logger.info(
-        f"{cnt-fail_in_reliability}\t{cnt}\t{fail_in_reliability}\t{str(config.architecture['block_features'])}\t{str(config.architecture['depth_of_mlp'])}\t{str(config.architecture['new_suffix'])}"
+        value_str+f"{cnt-fail_in_reliability}\t{cnt}\t{fail_in_reliability}\t{str(config.architecture['block_features'])}\t{str(config.architecture['depth_of_mlp'])}\t{str(config.architecture['new_suffix'])}"
         f"\t{OUTPUT_DIM}\t{BATCH_SIZE}\t{LEARNING_RATE}\t{WEIGHT_DECAY}\t{THRESHOLD}\t{MARGIN}\t{LOSS_THRESHOLD}\t{EPOCH}\t{SEED}\t{False}"
     )
 
