@@ -17,7 +17,7 @@ def graph6_to_pyg(x):
 class BRECDataset(InMemoryDataset):
     def __init__(
         self,
-        name="no_param",
+        name="no_param-",
         root="Data",
         transform=None,
         pre_transform=None,
