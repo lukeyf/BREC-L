@@ -43,9 +43,17 @@ To test on BREC, there are four steps to follow:
 ### Requirements
 
 The experiments were run on: Python 3.8.13 + [PyTorch 1.13.1](https://pytorch.org/get-started/previous-versions/) + [PyTorch_Geometric 2.2](https://pytorch-geometric.readthedocs.io/en/latest/notes/installation.html)
+You can use the following command to build the torch environment.
 
-You can use the following command for environment building.
+
+```bash
+pip install torch==1.13.0+cu117 torchvision==0.14.0+cu117 torchaudio==0.13.0 --extra-index-url https://download.pytorch.org/whl/cu117
+pip install pyg_lib torch_scatter torch_sparse torch_cluster torch_spline_conv -f https://data.pyg.org/whl/torch-1.13.0+cu117.html
+pip install torch-geometric==2.2.0
 ```
+You can use the following command for the rest of the environment building.
+
+```bash
 pip install -r requirements.txt
 ```
 
@@ -68,18 +76,18 @@ Only the PPGN involves the usage of `brec_v3.npy`. Move this file to `ProvablyPo
 
 First, move to the directory using 
 
-```
+```bash
 cd ProvablyPowerfulGraphNetworks_torch/main_scripts
 ```
 
 For the non-line graph experiment, you can use 
-```
+```bash
 python test_BREC_search.py
 ```
 
 For the line graph experiment, you can use
 
-```
+```bash
 python test_BREC_search_line.py
 ```
 
@@ -116,5 +124,5 @@ python test.py --wl 4 --method k-wl
 For line graph experiment for example with the 3-WL test, use 
 
 ```bash
-python test.py --wl 2 --method fwl --line-graph-degree 1
+python test.py --wl 2 --method fwl --line_graph_degree 1
 ```
